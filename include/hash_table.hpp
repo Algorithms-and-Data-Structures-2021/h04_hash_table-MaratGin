@@ -13,6 +13,7 @@ namespace itis {
     inline int hash(int key, int table_size) {
       return key % table_size;
     }
+
   }  // namespace utils
 
   class HashTable final {

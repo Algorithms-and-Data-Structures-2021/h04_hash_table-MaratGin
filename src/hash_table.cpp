@@ -1,7 +1,8 @@
 #include "hash_table.hpp"
-
+#include "iostream"
 #include <stdexcept>
 
+using namespace std;
 namespace itis {
 
   int HashTable::hash(int key) const {
@@ -13,25 +14,53 @@ namespace itis {
       throw std::logic_error("hash table capacity must be greater than zero");
     }
 
+
     if (load_factor <= 0.0 || load_factor > 1.0) {
       throw std::logic_error("hash table load factor must be in range [0...1]");
     }
 
+    buckets_.resize(capacity);
     // Tip: allocate hash-table buckets
   }
 
   std::optional<std::string> HashTable::Search(int key) const {
+    int hashIndex = hash(key);
+    Bucket bucket = buckets_[hashIndex];
+
+    for(const auto &pair:bucket ){
+      if(pair.first == key){
+        return pair.second;
+      }
+    }
+
     // Tip: compute hash code (index) and use linear search
     return std::nullopt;
   }
 
   void HashTable::Put(int key, const std::string &value) {
+    int hashIndex = hash(key);
+
+    if (buckets_[hashIndex].empty()){
+      num_keys_++;
+      buckets_[hashIndex].push_back(pair(key,value));
+
+    } else{
+      buckets_[hashIndex].push_back(pair(key,value));
+    }
+//    Bucket bucket= buckets_[hashIndex];
+//    bucket.push_back(pair(key,value));
+//bucket.e
+
     // Tip 1: compute hash code (index) to determine which bucket to use
     // Tip 2: consider the case when the key exists (read the docs in the header file)
 
     if (static_cast<double>(num_keys_) / buckets_.size() >= load_factor_) {
+
       // Tip 3: recompute hash codes (indices) for key-value pairs (create a new hash-table)
       // Tip 4: use utils::hash(key, size) to compute new indices for key-value pairs
+      utils::hash(key,buckets_.size());
+      buckets_.resize(buckets_.capacity() * HashTable::kGrowthCoefficient);
+
     }
   }
 
